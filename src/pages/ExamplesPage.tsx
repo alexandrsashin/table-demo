@@ -6,6 +6,7 @@ import { NestedTable } from "../components/examples/NestedTable";
 import { TextDetailTable } from "../components/examples/TextDetailTable";
 import { DynamicRowsTable } from "../components/examples/DynamicRowsTable";
 import { LazyLoadingTable } from "../components/examples/LazyLoadingTable";
+import { SearchHighlightTable } from "../components/examples/SearchHighlightTable";
 
 export function ExamplesPage() {
   return (
@@ -27,6 +28,7 @@ export function ExamplesPage() {
             <Tabs.Tab value="details">Детали записи</Tabs.Tab>
             <Tabs.Tab value="dynamic">Drag & Drop</Tabs.Tab>
             <Tabs.Tab value="lazy">Подгрузка данных</Tabs.Tab>
+            <Tabs.Tab value="search">Поиск и анимация</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="table1" pt="md">
@@ -150,6 +152,21 @@ export function ExamplesPage() {
               <br />• Возможность сброса и перезагрузки данных
             </Text>
             <LazyLoadingTable />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="search" pt="md">
+            <Title order={3} mb="sm">
+              Таблица с поиском и анимацией
+            </Title>
+            <Text size="sm" c="dimmed" mb="md">
+              Пример таблицы с подсветкой результатов поиска и анимированным
+              добавлением записей:
+              <br />• Поиск с подсветкой найденных подстрок во всех ячейках
+              <br />• Кнопка добавления новой записи
+              <br />• Автоматический скролл к добавленной записи
+              <br />• Временная анимация подсветки новой строки (2 сек)
+            </Text>
+            <SearchHighlightTable />
           </Tabs.Panel>
         </Tabs>
       </Container>
