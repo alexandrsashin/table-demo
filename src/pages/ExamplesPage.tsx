@@ -5,6 +5,7 @@ import { HierarchicalTable } from "../components/examples/HierarchicalTable";
 import { NestedTable } from "../components/examples/NestedTable";
 import { TextDetailTable } from "../components/examples/TextDetailTable";
 import { DynamicRowsTable } from "../components/examples/DynamicRowsTable";
+import { LazyLoadingTable } from "../components/examples/LazyLoadingTable";
 
 export function ExamplesPage() {
   return (
@@ -25,6 +26,7 @@ export function ExamplesPage() {
             <Tabs.Tab value="nested">Вложенная таблица</Tabs.Tab>
             <Tabs.Tab value="details">Детали записи</Tabs.Tab>
             <Tabs.Tab value="dynamic">Drag & Drop</Tabs.Tab>
+            <Tabs.Tab value="lazy">Подгрузка данных</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="table1" pt="md">
@@ -134,6 +136,20 @@ export function ExamplesPage() {
               <br />• Бейджи для приоритета и статуса задач
             </Text>
             <DynamicRowsTable />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="lazy" pt="md">
+            <Title order={3} mb="sm">
+              Таблица с динамической подгрузкой данных
+            </Title>
+            <Text size="sm" c="dimmed" mb="md">
+              Пример таблицы с пошаговой загрузкой данных по требованию:
+              <br />• Загрузка данных порциями по 15 записей
+              <br />• Кнопка "Загрузить еще" для загрузки следующей порции
+              <br />• Индикатор загрузки и счетчик загруженных записей
+              <br />• Возможность сброса и перезагрузки данных
+            </Text>
+            <LazyLoadingTable />
           </Tabs.Panel>
         </Tabs>
       </Container>
