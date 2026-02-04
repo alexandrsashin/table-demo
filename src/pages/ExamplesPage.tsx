@@ -4,6 +4,7 @@ import { VirtualizedInfiniteScrollTable } from "../components/examples/Virtualiz
 import { HierarchicalTable } from "../components/examples/HierarchicalTable";
 import { NestedTable } from "../components/examples/NestedTable";
 import { TextDetailTable } from "../components/examples/TextDetailTable";
+import { DynamicRowsTable } from "../components/examples/DynamicRowsTable";
 
 export function ExamplesPage() {
   return (
@@ -23,6 +24,7 @@ export function ExamplesPage() {
             <Tabs.Tab value="hierarchical">Иерархия</Tabs.Tab>
             <Tabs.Tab value="nested">Вложенная таблица</Tabs.Tab>
             <Tabs.Tab value="details">Детали записи</Tabs.Tab>
+            <Tabs.Tab value="dynamic">Drag & Drop</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="table1" pt="md">
@@ -116,6 +118,22 @@ export function ExamplesPage() {
               детальной информации
             </Text>
             <TextDetailTable />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="dynamic" pt="md">
+            <Title order={3} mb="sm">
+              Таблица с динамической высотой строк и Drag & Drop
+            </Title>
+            <Text size="sm" c="dimmed" mb="md">
+              Пример таблицы с динамической высотой строк в зависимости от
+              содержимого, подсветкой статуса записей и возможностью перемещения
+              строк:
+              <br />• Динамическая высота строк для длинного текста
+              <br />• Цветная подсветка статуса (positive, warning, negative)
+              <br />• Drag & Drop для изменения порядка строк
+              <br />• Бейджи для приоритета и статуса задач
+            </Text>
+            <DynamicRowsTable />
           </Tabs.Panel>
         </Tabs>
       </Container>
