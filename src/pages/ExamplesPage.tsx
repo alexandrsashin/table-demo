@@ -1,221 +1,9 @@
-import { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import {
-  MantineProvider,
-  Tabs,
-  Container,
-  Title,
-  Text,
-  Tooltip,
-  Loader,
-  Center,
-} from "@mantine/core";
-import {
-  MantineReactTable,
-  type MRT_ColumnDef,
-  type MRT_Virtualizer,
-} from "mantine-react-table";
-import { IconInfoCircle } from "@tabler/icons-react";
-import { TABLE_DATA } from "../constants";
-
-interface TableRow {
-  id: number;
-  label: string;
-  date: string;
-}
-
-function AdvancedMantineTable() {
-  const columns = useMemo<MRT_ColumnDef<TableRow>[]>(
-    () => [
-      {
-        accessorKey: "id",
-        header: "ID",
-        size: 80,
-        enableHiding: false, // Блокировка - нельзя скрыть
-        enableColumnOrdering: false, // Блокировка - нельзя переместить
-        enableResizing: true,
-        mantinePaperProps: {
-          style: { minWidth: "80px" },
-        },
-      },
-      {
-        accessorKey: "label",
-        header: "Label",
-        size: 200,
-        enableResizing: true,
-        enableHiding: true,
-        enableColumnOrdering: true,
-        Header: () => (
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span>Label</span>
-            <Tooltip label="Это информационная подсказка для колонки Label">
-              <IconInfoCircle size={16} style={{ cursor: "help" }} />
-            </Tooltip>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "date",
-        header: "Date",
-        size: 150,
-        enableResizing: true,
-        enableHiding: true,
-        enableColumnOrdering: true,
-      },
-    ],
-    [],
-  );
-
-  return (
-    <MantineReactTable
-      columns={columns}
-      data={TABLE_DATA}
-      enableColumnOrdering // Изменение порядка колонок
-      enableColumnResizing // Изменение ширины колонок
-      enablePinning // Фиксация колонок
-      enableSorting // Сортировка
-      enableColumnActions // Действия с колонками
-      enableHiding // Скрытие колонок
-      initialState={{
-        density: "xs",
-        pagination: { pageSize: 20, pageIndex: 0 },
-        columnPinning: {
-          left: ["id"], // ID зафиксирован слева по умолчанию
-        },
-      }}
-      mantineTableProps={{
-        highlightOnHover: true,
-        withColumnBorders: true,
-        striped: true,
-      }}
-      mantineTableContainerProps={{
-        sx: { maxHeight: "600px" },
-      }}
-      mantinePaginationProps={{
-        showRowsPerPage: true,
-        rowsPerPageOptions: ["10", "20", "50", "100"],
-      }}
-      enableColumnDragging // Перетаскивание колонок для изменения порядка
-      columnResizeMode="onChange" // Изменение размера в реальном времени
-    />
-  );
-}
-
-function VirtualizedInfiniteScrollTable() {
-  const [data, setData] = useState<TableRow[]>(() => TABLE_DATA.slice(0, 50));
-  const [isLoading, setIsLoading] = useState(false);
-  const tableContainerRef = useRef<HTMLDivElement>(null);
-  const rowVirtualizerInstanceRef =
-    useRef<MRT_Virtualizer<HTMLDivElement, HTMLTableRowElement>>(null);
-
-  const columns = useMemo<MRT_ColumnDef<TableRow>[]>(
-    () => [
-      {
-        accessorKey: "id",
-        header: "ID",
-        size: 80,
-      },
-      {
-        accessorKey: "label",
-        header: "Label",
-        size: 200,
-      },
-      {
-        accessorKey: "date",
-        header: "Date",
-        size: 150,
-      },
-    ],
-    [],
-  );
-
-  // Функция для загрузки дополнительных данных
-  const fetchMoreData = useCallback(() => {
-    if (isLoading || data.length >= TABLE_DATA.length) return;
-
-    setIsLoading(true);
-
-    // Симулируем задержку сети
-    setTimeout(() => {
-      const currentLength = data.length;
-      const moreData = TABLE_DATA.slice(currentLength, currentLength + 20);
-      setData((prev) => [...prev, ...moreData]);
-      setIsLoading(false);
-    }, 500);
-  }, [data.length, isLoading]);
-
-  // Отслеживание скролла для бесконечной загрузки
-  useEffect(() => {
-    const handleScroll = (e: Event) => {
-      const target = e.target as HTMLDivElement;
-      const scrollTop = target.scrollTop;
-      const scrollHeight = target.scrollHeight;
-      const clientHeight = target.clientHeight;
-
-      // Загружаем новые данные когда пользователь приближается к концу (за 200px)
-      if (
-        scrollHeight - scrollTop - clientHeight < 200 &&
-        !isLoading &&
-        data.length < TABLE_DATA.length
-      ) {
-        fetchMoreData();
-      }
-    };
-
-    const tableContainer = tableContainerRef.current;
-    if (tableContainer) {
-      const scrollContainer = tableContainer.querySelector(
-        ".mantine-TableContainer-root",
-      );
-      if (scrollContainer) {
-        scrollContainer.addEventListener("scroll", handleScroll);
-        return () =>
-          scrollContainer.removeEventListener("scroll", handleScroll);
-      }
-    }
-  }, [fetchMoreData, isLoading, data.length]);
-
-  return (
-    <>
-      <MantineReactTable
-        columns={columns}
-        data={data}
-        enableBottomToolbar={false}
-        enableGlobalFilterModes
-        enablePagination={false} // Отключаем пагинацию для бесконечного скролла
-        enableRowVirtualization // Включаем виртуализацию строк
-        mantineTableContainerProps={{
-          ref: tableContainerRef,
-          sx: { maxHeight: "600px", minHeight: "600px" },
-        }}
-        mantineTableProps={{
-          highlightOnHover: true,
-          withColumnBorders: true,
-          striped: true,
-        }}
-        rowVirtualizerInstanceRef={rowVirtualizerInstanceRef}
-        rowVirtualizerProps={{ overscan: 10 }}
-        state={{
-          isLoading: false,
-        }}
-      />
-      {isLoading && (
-        <Center mt="md">
-          <Loader size="sm" />
-          <Text size="sm" ml="sm" c="dimmed">
-            Загрузка данных... ({data.length} из {TABLE_DATA.length})
-          </Text>
-        </Center>
-      )}
-      {data.length >= TABLE_DATA.length && (
-        <Center mt="md">
-          <Text size="sm" c="dimmed">
-            Все данные загружены ({TABLE_DATA.length} записей)
-          </Text>
-        </Center>
-      )}
-    </>
-  );
-}
+import { MantineProvider, Tabs, Container, Title, Text } from "@mantine/core";
+import { AdvancedMantineTable } from "../components/examples/AdvancedMantineTable";
+import { VirtualizedInfiniteScrollTable } from "../components/examples/VirtualizedInfiniteScrollTable";
+import { HierarchicalTable } from "../components/examples/HierarchicalTable";
+import { NestedTable } from "../components/examples/NestedTable";
+import { TextDetailTable } from "../components/examples/TextDetailTable";
 
 export function ExamplesPage() {
   return (
@@ -231,10 +19,10 @@ export function ExamplesPage() {
         <Tabs defaultValue="table1">
           <Tabs.List>
             <Tabs.Tab value="table1">Колонки</Tabs.Tab>
-            <Tabs.Tab value="example2">
-              Виртуализация и бесконечный скролл
-            </Tabs.Tab>
-            <Tabs.Tab value="example3">Пример 3</Tabs.Tab>
+            <Tabs.Tab value="example2">Виртуализация</Tabs.Tab>
+            <Tabs.Tab value="hierarchical">Иерархия</Tabs.Tab>
+            <Tabs.Tab value="nested">Вложенная таблица</Tabs.Tab>
+            <Tabs.Tab value="details">Детали записи</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="table1" pt="md">
@@ -277,11 +65,57 @@ export function ExamplesPage() {
             <VirtualizedInfiniteScrollTable />
           </Tabs.Panel>
 
-          <Tabs.Panel value="example3" pt="md">
+          <Tabs.Panel value="hierarchical" pt="md">
             <Title order={3} mb="sm">
-              Пример 3
+              Иерархическая таблица
             </Title>
-            <Text c="dimmed">Здесь будет размещен третий пример</Text>
+            <Text size="sm" c="dimmed" mb="md">
+              • Многоуровневая иерархия (категории → подкатегории → товары)
+              <br />
+              • Раскрытие/скрытие подуровней
+              <br />
+              • Кнопка "Развернуть всё"
+              <br />
+              • Визуальное отображение уровней вложенности
+              <br />• Использование getSubRows для определения дочерних
+              элементов
+            </Text>
+            <HierarchicalTable />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="nested" pt="md">
+            <Title order={3} mb="sm">
+              Таблица с вложенной таблицей
+            </Title>
+            <Text size="sm" c="dimmed" mb="md">
+              • Основная таблица товаров с ценами и остатками
+              <br />
+              • При раскрытии строки показывается вложенная таблица заказов
+              <br />
+              • Каждая вложенная таблица имеет свою структуру колонок
+              <br />
+              • Полноценная таблица внутри detail panel
+              <br />• Идеально для отображения связанных данных
+            </Text>
+            <NestedTable />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="details" pt="md">
+            <Title order={3} mb="sm">
+              Таблица с детальной информацией
+            </Title>
+            <Text size="sm" c="dimmed" mb="md">
+              • Компактная таблица книг
+              <br />
+              • При раскрытии строки показывается подробное описание
+              <br />
+              • Текстовый блок с дополнительной информацией
+              <br />
+              • Отформатированный detail panel
+              <br />• Подходит для отображения описаний, комментариев и
+              детальной информации
+            </Text>
+            <TextDetailTable />
           </Tabs.Panel>
         </Tabs>
       </Container>
