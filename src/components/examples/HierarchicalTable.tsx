@@ -1,6 +1,7 @@
-import { useMemo } from "react";
-import { Badge } from "@mantine/core";
+import { useMemo, useState } from "react";
+import { Badge, ActionIcon, Box, Text } from "@mantine/core";
 import { MantineReactTable, type MRT_ColumnDef } from "mantine-react-table";
+import { IconTrash } from "@tabler/icons-react";
 
 interface HierarchicalRow {
   id: number;
@@ -114,6 +115,21 @@ const hierarchicalData: HierarchicalRow[] = [
 ];
 
 export function HierarchicalTable() {
+  const [data, setData] = useState<HierarchicalRow[]>(hierarchicalData);
+
+  // Рекурсивное удаление элемента по id
+  const deleteRow = (idToDelete: number) => {
+    const removeFromTree = (items: HierarchicalRow[]): HierarchicalRow[] => {
+      return items
+        .filter((item) => item.id !== idToDelete)
+        .map((item) => ({
+          ...item,
+          subRows: item.subRows ? removeFromTree(item.subRows) : undefined,
+        }));
+    };
+    setData(removeFromTree(data));
+  };
+
   const columns = useMemo<MRT_ColumnDef<HierarchicalRow>[]>(
     () => [
       {
@@ -166,10 +182,25 @@ export function HierarchicalTable() {
   return (
     <MantineReactTable
       columns={columns}
-      data={hierarchicalData}
+      data={data}
       enableExpanding
       enableExpandAll
+      enableRowSelection
+      enableRowActions
+      positionActionsColumn="first"
       getSubRows={(row) => row.subRows}
+      renderRowActionMenuItems={({ row }) => [
+        <Box
+          key="delete"
+          p="xs"
+          style={{ cursor: "pointer" }}
+          onClick={() => deleteRow(row.original.id)}
+        >
+          <ActionIcon color="red" variant="subtle">
+            <IconTrash size={18} />
+          </ActionIcon>
+        </Box>,
+      ]}
       initialState={{
         expanded: true,
         density: "xs",

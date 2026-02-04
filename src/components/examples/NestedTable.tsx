@@ -1,6 +1,7 @@
-import { useMemo } from "react";
-import { Badge, Box, Title, Text } from "@mantine/core";
+import { useMemo, useState } from "react";
+import { Badge, Box, Title, Text, ActionIcon } from "@mantine/core";
 import { MantineReactTable, type MRT_ColumnDef } from "mantine-react-table";
+import { IconTrash } from "@tabler/icons-react";
 
 interface RowWithDetails {
   id: number;
@@ -106,6 +107,12 @@ const detailsData: RowWithDetails[] = [
 ];
 
 export function NestedTable() {
+  const [data, setData] = useState<RowWithDetails[]>(detailsData);
+
+  const deleteRow = (idToDelete: number) => {
+    setData((prev) => prev.filter((row) => row.id !== idToDelete));
+  };
+
   const columns = useMemo<MRT_ColumnDef<RowWithDetails>[]>(
     () => [
       {
@@ -171,8 +178,23 @@ export function NestedTable() {
   return (
     <MantineReactTable
       columns={columns}
-      data={detailsData}
+      data={data}
       enableExpanding
+      enableRowSelection
+      enableRowActions
+      positionActionsColumn="first"
+      renderRowActionMenuItems={({ row }) => [
+        <Box
+          key="delete"
+          p="xs"
+          style={{ cursor: "pointer" }}
+          onClick={() => deleteRow(row.original.id)}
+        >
+          <ActionIcon color="red" variant="subtle">
+            <IconTrash size={18} />
+          </ActionIcon>
+        </Box>,
+      ]}
       renderDetailPanel={({ row }) => (
         <Box p="md" style={{ backgroundColor: "#f8f9fa" }}>
           <Title order={5} mb="sm">
