@@ -7,6 +7,7 @@ import { TextDetailTable } from "../components/examples/TextDetailTable";
 import { DynamicRowsTable } from "../components/examples/DynamicRowsTable";
 import { LazyLoadingTable } from "../components/examples/LazyLoadingTable";
 import { SearchHighlightTable } from "../components/examples/SearchHighlightTable";
+import { VirtualizedExpandedTable } from "../components/examples/VirtualizedExpandedTable";
 
 export function ExamplesPage() {
   return (
@@ -29,6 +30,7 @@ export function ExamplesPage() {
             <Tabs.Tab value="dynamic">Drag & Drop</Tabs.Tab>
             <Tabs.Tab value="lazy">Подгрузка данных</Tabs.Tab>
             <Tabs.Tab value="search">Поиск и анимация</Tabs.Tab>
+            <Tabs.Tab value="virt-expanded">Виртуализация + вложенные</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="table1" pt="md">
@@ -167,6 +169,22 @@ export function ExamplesPage() {
               <br />• Временная анимация подсветки новой строки (2 сек)
             </Text>
             <SearchHighlightTable />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="virt-expanded" pt="md">
+            <Title order={3} mb="sm">
+              Виртуализация таблицы с открытыми вложенными блоками
+            </Title>
+            <Text size="sm" c="dimmed" mb="md">
+              Пример виртуализированной таблицы (500 строк) с раскрытыми detail
+              panel:
+              <br />• Виртуализация строк — рендерятся только видимые строки
+              <br />• Первые 20 строк раскрыты по умолчанию
+              <br />• Вложенные блоки содержат таблицу заказов со статусами
+              <br />• Можно раскрывать/скрывать любую строку
+              <br />• Пагинация отключена — весь список доступен через скролл
+            </Text>
+            <VirtualizedExpandedTable />
           </Tabs.Panel>
         </Tabs>
       </Container>
