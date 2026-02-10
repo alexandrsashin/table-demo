@@ -8,6 +8,7 @@ import { DynamicRowsTable } from "../components/examples/DynamicRowsTable";
 import { LazyLoadingTable } from "../components/examples/LazyLoadingTable";
 import { SearchHighlightTable } from "../components/examples/SearchHighlightTable";
 import { VirtualizedExpandedTable } from "../components/examples/VirtualizedExpandedTable";
+import { EditableRowTable } from "../components/examples/EditableRowTable";
 
 export function ExamplesPage() {
   return (
@@ -31,6 +32,7 @@ export function ExamplesPage() {
             <Tabs.Tab value="lazy">Подгрузка данных</Tabs.Tab>
             <Tabs.Tab value="search">Поиск и анимация</Tabs.Tab>
             <Tabs.Tab value="virt-expanded">Виртуализация + вложенные</Tabs.Tab>
+            <Tabs.Tab value="editable-row">Редактирование строки</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="table1" pt="md">
@@ -185,6 +187,23 @@ export function ExamplesPage() {
               <br />• Пагинация отключена — весь список доступен через скролл
             </Text>
             <VirtualizedExpandedTable />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="editable-row" pt="md">
+            <Title order={3} mb="sm">
+              Обновление данных строки
+            </Title>
+            <Text size="sm" c="dimmed" mb="md">
+              Пример inline-редактирования строки с имитацией API-запроса:
+              <br />• Режим редактирования строки (editingMode="row")
+              <br />• Inline-поля ввода: текст, число, select, дата
+              <br />• Имитация асинхронного API-запроса с индикатором загрузки
+              <br />• 10% шанс ошибки сервера для демонстрации обработки
+              <br />• Уведомления об успехе/ошибке сохранения
+              <br />• Отмена последнего изменения (undo)
+              <br />• Сброс всех данных к начальному состоянию
+            </Text>
+            <EditableRowTable />
           </Tabs.Panel>
         </Tabs>
       </Container>
